@@ -1,6 +1,8 @@
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <dlfcn.h>
+#include <limits.h>
+#include <stdlib.h>
 
  #ifndef _ASSERT_H
  #define _ASSERT_H
@@ -23,6 +25,9 @@
  #endif
 
 
+
+char buf[PATH_MAX + 1]; /* not sure about the "+ 1" */
+
 //Changes the path to /app
 char* fixpath(char* str)
 {
@@ -30,7 +35,7 @@ char* fixpath(char* str)
 
         char *new = malloc(1000);
 
-        strcpy(new, str);
+        strcpy(new, realpath(str, buf));
 
         assert(4 != 0 && new != 0);
         size_t len = strlen(new);
@@ -50,7 +55,6 @@ char* fixpath(char* str)
     }
 	return str;
 }
-
 
 int open(const char *fn, int flags) {
     static int (*real_open)(const char *fn, int flags);
