@@ -33,23 +33,12 @@ char* fixpath(char* str)
 {
 	if(!strncmp(str, "/usr", strlen("/usr"))) {
 
-        char *new = malloc(1000);
+        strcpy(str, realpath(str, buf)); //Run realpath on string to improve compatibility
 
-        strcpy(new, realpath(str, buf));
+        memcpy(str, "/app", strlen("/app"));
 
-        assert(4 != 0 && new != 0);
-        size_t len = strlen(new);
-        if (4 > len)
-            return;  // Or: n = len;
-        memmove(new, new+4, len - 4 + 1); //Remove /usr
+        printf("[libmv] New path is %s\n",str);
 
-        char *s = malloc(4+strlen(new)+1);//+1 for the zero-terminator
-        //in real code you would check for errors in malloc here
-        strcpy(s, "/app");
-        strcat(s, new);
-        printf("[libmv] New path for %s is %s\n", str,s);
-        return s;
-        free(s);//deallocate the string
         //We cannot use replace because if we use replace /usr/dir/usr/file will become /app/dir/app/file
         //The currently used method removes the first 4 characters and inserts /app to the start.	
     }
